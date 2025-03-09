@@ -32,6 +32,9 @@ ax.plot_surface(sphere_x, sphere_y, sphere_z, color="orange", label="Planet")
 ax.set(xticklabels=[],
        yticklabels=[],
        zticklabels=[])
+ax.set_xlim([-0.7, 0.7])
+ax.set_ylim([-0.7, 0.7])
+ax.set_zlim([0, 1])
 
 plt.legend()
 plt.show()
