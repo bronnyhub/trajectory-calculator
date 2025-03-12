@@ -1,78 +1,49 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
-import datetime as dt
-import math as m
-
 from skyfield.api import load
+import datetime as dt
 
+#satellite data
 ts = load.timescale()
 satellites = load.tle_file("satelity.txt")
-satellite = satellites[0]  # Pick the first satellite
+satellite = satellites[0]  #!!!zmienić na to, aby można było wybrać satelitę z listy
 
-orb = satellite.at(ts.now())  # Compute the satellite’s position
-plt.style.use('_mpl-gallery')
+#time range
+now = dt.datetime.utcnow()
+time_steps = ts.utc(now.year, now.month, now.day, np.linspace(0, 24, 144))
+positions = satellite.at(time_steps).position.km 
 
-#file with satellites data - skróć ten link
-ADDR = "satelity.txt"
-TLE = open(ADDR,"r").readlines()
+#coordinates
+x = positions[0]
+y = positions[1]
+z = positions[2]
 
-#constants for Earth = change for other planets!!!
-mu = 398600.4418
-r = 6781
-D = 24*0.997269
+#satellite trajectory
+fig = plt.figure(figsize=(8, 6))
+ax = fig.add_subplot(111, projection='3d')
+ax.view_init(elev=30, azim=220)
 
-# trajectory
-n = 1000
-xs = np.linspace(0, 1, n)
-ys = np.sin(xs * 10 * np.pi)
-zs = np.cos(xs * 10 * np.pi)
-
-# place the planet
-center_x=0
-center_y=0
-center_z=0.5
-planet_radius=0.3
-
-# planet
+#Earth !!! zmienić, aby można było wybrać planetę z układu słonecznego
+earth_radius = 6371
 u = np.linspace(0, 2 * np.pi, 30)
 v = np.linspace(0, np.pi, 30)
-sphere_x = center_x + planet_radius * np.outer(np.cos(u), np.sin(v))
-sphere_y = center_y + planet_radius * np.outer(np.sin(u), np.sin(v))    
-sphere_z = center_z + planet_radius * np.outer(np.ones(np.size(u)), np.cos(v))
+earth_x = earth_radius * np.outer(np.cos(u), np.sin(v))
+earth_y = earth_radius * np.outer(np.sin(u), np.sin(v))
+earth_z = earth_radius * np.outer(np.ones(np.size(u)), np.cos(v))
+ax.plot_surface(earth_x, earth_y, earth_z, alpha=0.5, zorder=1)
+ax.set_aspect('equal')
+ax.view_init(elev=20, azim=130)
 
-# Plot trajectory
-def plot_tle(data):
-    fig = plt.figure()
-    ax = plt.axes(projection='3d', computed_zorder=False)
+#satellite path
+ax.plot(x, y, z, label="Satellite Trajectory", color="orange", zorder=2, linewidth=2)
+#current position
+ax.scatter(x[0], y[0], z[0], color="red", label="Current Position", s=50, zorder=3)
 
-    # Initialize `orb` to avoid UnboundLocalError
-    orb = {"t": dt.datetime.now()}  # Default time if no valid TLE data is found
-
-    for i in range(len(data)//2):
-        if data[i*2][0] != "1":
-            print("Wrong TLE format at line "+str(i*2)+". Lines ignored.")
-            continue
-        if int(data[i*2][18:20]) > int(dt.date.today().year%100):
-            orb = {"t": dt.datetime.strptime("19"+data[i*2][18:20]+" "+data[i*2][20:23]+" "+
-                                             str(int(24*float(data[i*2][23:33])//1))+" "+
-                                             str(int(((24*float(data[i*2][23:33])%1)*60)//1))+" "+
-                                             str(int((((24*float(data[i*2][23:33])%1)*60)%1)//1)), "%Y %j %H %M %S")}
-        else:
-            orb = {"t": dt.datetime.strptime("20"+data[i*2][18:20]+" "+data[i*2][20:23]+" "+
-                                             str(int(24*float(data[i*2][23:33])//1))+" "+
-                                             str(int(((24*float(data[i*2][23:33])%1)*60)//1))+" "+
-                                             str(int((((24*float(data[i*2][23:33])%1)*60)%1)//1)), "%Y %j %H %M %S")}
-        orb.update({"name": data[i*2+1][2:7], "e": float("."+data[i*2+1][26:34]),
-                    "a": (mu/((2*m.pi*float(data[i*2+1][52:63])/(D*3600))**2))**(1./3),
-                    "i": float(data[i*2+1][9:17])*m.pi/180,
-                    "RAAN": float(data[i*2+1][17:26])*m.pi/180,
-                    "omega": float(data[i*2+1][34:43])*m.pi/180})
-
-    plt.title("Orbits plotted in the ECE frame as of " + orb["t"].strftime("%m %Y"))
-    plt.show()
-
-#file with satellites data  
-ADDR = "satelity.txt"
-TLE = open(ADDR,"r").readlines()
-plot_tle(TLE), orb
+#legend
+ax.set_xlabel("X (km)")
+ax.set_ylabel("Y (km)")
+ax.set_zlabel("Z (km)")
+ax.set_title(f"Satellite Trajectory (UTC: {dt.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')})")
+ax.legend()
+plt.show()
