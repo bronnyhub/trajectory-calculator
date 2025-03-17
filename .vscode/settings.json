@@ -9,7 +9,7 @@
             "server": "localhost",
             "port": 3306,
             "driver": "MySQL",
-            "name": "planets",
+            "name": "test",
             "database": "planets",
             "username": "julka",
             "password": "bronny"
