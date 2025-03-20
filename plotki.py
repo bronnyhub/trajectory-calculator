@@ -3,6 +3,49 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 from skyfield.api import load
 import datetime as dt
+import mysql.connector
+import mysql.connector
+import os
+from dotenv import load_dotenv
+
+#.env
+load_dotenv()
+
+#MySQL+python
+conn = mysql.connector.connect(
+    host=os.getenv("MYSQL_HOST"),
+    user=os.getenv("MYSQL_USER"),
+    password=os.getenv("MYSQL_PASSWORD"),
+    database=os.getenv("MYSQL_DATABASE"),
+    port=int(os.getenv("MYSQL_PORT", 3306))
+)
+
+cursor = conn.cursor()
+
+planet_name = input("Please choose a planet (Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto): ")
+print(f"User selected: '{planet_name}'")
+
+query = "SELECT radius FROM planets WHERE planet = %s"
+cursor.execute(query, (planet_name,))
+result = cursor.fetchone()
+
+if result:
+    print(f"The radius of {planet_name} is {result[0]} km.")
+else:
+    print("Planet not found.")
+
+satellite_id = input("Please choose a satellite (2A, 2B, 2C, 2D, 2E): ")
+print(f"User selected: '{satellite_id}'")
+
+#tu mamy to co on zwraca w result 0
+query = "SELECT satellite FROM satellites WHERE id = %s"
+cursor.execute(query, (satellite_id,))
+result = cursor.fetchone()
+
+if result:
+    print(f"The name of {satellite_id} is {result[0]}.")
+else:
+    print("Satellite not found.")
 
 #satellite data
 ts = load.timescale()

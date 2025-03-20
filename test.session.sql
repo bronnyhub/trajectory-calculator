@@ -1,9 +1,37 @@
 --@block
 SELECT * FROM planets;
 
+--@block
+SELECT * FROM satellites;
 
 --@block
 CREATE TABLE satellites(
-    id INT primary key,
-    satellite VARCHAR(255) NOT NULL
+    id VARCHAR(225) NOT NULL,
+    satellite VARCHAR(255) NOT NULL,
+    position1 VARCHAR(255) NOT NULL,
+    position2 VARCHAR(255) NOT NULL
 );
+
+--@block
+ALTER TABLE satellites MODIFY id VARCHAR(255) NOT NULL FIRST;
+
+--@block
+show tables;
+show variables;
+
+--@block
+INSERT INTO satellites (id, satellite, position1, position2) VALUES ('2A', 'KINEIS-2A',
+'1 62932U 25028E   25070.18603320  .00002712  00000+0  39695-3 0  9992', 
+'2 62932  97.9520 125.5704 0002314 177.9065 182.2155 14.76452397  4461');
+INSERT INTO satellites (id, satellite, position1, position2) VALUES ('2B', 'KINEIS-2B',
+'1 62934U 25028G   25070.18370421  .00003040  00000+0  44270-3 0  9997', 
+'2 62934  97.9518 125.5732 0002807 160.1255 200.0064 14.76586491  4464');
+INSERT INTO satellites (id, satellite, position1, position2) VALUES ('2C', 'KINEIS-2C',
+'1 62929U 25028B   25070.19584427  .00002953  00000+0  43614-3 0  9998', 
+'2 62929  97.9519 125.5574 0000226 139.0080 221.1147 14.76001819  4469');
+INSERT INTO satellites (id, satellite, position1, position2) VALUES ('2D', 'KINEIS-2D',
+'1 62930U 25028C   25070.19403799  .00000140  00000+0  27638-4 0  9997', 
+'2 62930  97.9518 125.5594 0000542 185.2961 174.8243 14.76069104  4477');
+INSERT INTO satellites (id, satellite, position1, position2) VALUES ('2E', 'KINEIS-2E',
+'1 62931U 25028D   25070.19223928  .00002871  00000+0  42266-3 0  9998', 
+'2 62931  97.9516 125.5619 0001390 125.6487 234.4852 14.76155257  4471');
